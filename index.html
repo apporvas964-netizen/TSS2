@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+    <title>The Suit Story</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+    <style>
+        *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+        :root{--cream:#faf7f2;--warm:#f5efe6;--dark:#1a1612;--mid:#3d3530;--gold:#b8975a;--gold-light:#d4b483;--border:#e8ddd0;--muted:#8a7968;--card:#fff;--glass:rgba(250,247,242,0.94)}
+        html{scroll-behavior:smooth}
+        body{background:var(--cream);color:var(--dark);font-family:'DM Sans',sans-serif;font-weight:300;overflow-x:hidden}
+        @media(hover:hover) and (pointer:fine){body{cursor:none}#cur,#cur2{display:block}}
+        #cur,#cur2{position:fixed;pointer-events:none;z-index:99999;border-radius:50%;display:none}
+        #cur{width:8px;height:8px;background:var(--gold);top:0;left:0;transform:translate(-50%,-50%)}
+        #cur2{width:32px;height:32px;border:1px solid var(--gold);top:0;left:0;transform:translate(-50%,-50%);transition:width .3s,height .3s,opacity .3s,left .1s,top .1s}
+        @media(hover:hover) and (pointer:fine){body:has(a:hover) #cur2,body:has(button:hover) #cur2{width:48px;height:48px;opacity:.5}}
+
+        #splash{position:fixed;inset:0;background:var(--dark);z-index:9999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.2rem;transition:opacity .7s ease}
+        .sp-ring{position:absolute;border-radius:50%;border:1px solid rgba(184,151,90,.15);animation:pulse 3s ease-in-out infinite}
+        .sp-ring:nth-child(1){width:200px;height:200px}
+        .sp-ring:nth-child(2){width:350px;height:350px;animation-delay:.8s}
+        .sp-ring:nth-child(3){width:500px;height:500px;animation-delay:1.6s}
+        @keyframes pulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.04);opacity:.6}}
+        .sp-monogram{font-family:'Cormorant Garamond',serif;font-size:4rem;font-weight:300;color:var(--gold);letter-spacing:.3em;opacity:0;animation:fadeUp .9s ease .3s forwards;z-index:1}
+        .sp-name{font-family:'Cormorant Garamond',serif;font-size:1.1rem;letter-spacing:.4em;text-transform:uppercase;color:rgba(255,255,255,.5);opacity:0;animation:fadeUp .9s ease .9s forwards;z-index:1}
+        .sp-bar{width:0;height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);animation:barGrow .7s ease 1.5s forwards;z-index:1}
+        @keyframes barGrow{to{width:120px}}
+        @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+
+        nav{position:sticky;top:0;z-index:100;background:var(--glass);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-bottom:1px solid var(--border);height:60px;display:flex;align-items:center;justify-content:space-between;padding:0 1rem}
+        .nav-brand{font-family:'Cormorant Garamond',serif;font-size:1.05rem;letter-spacing:.15em;text-transform:uppercase;color:var(--dark);text-decoration:none;flex-shrink:0}
+        .nav-links{display:flex;gap:1.2rem;list-style:none}
+        @media(max-width:540px){.nav-links{display:none}}
+        .nav-links a{font-size:.65rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);text-decoration:none;transition:color .2s}
+        .nav-links a:hover{color:var(--gold)}
+        .nav-right{display:flex;align-items:center;gap:.5rem}
+        .nav-cta{background:var(--dark);color:var(--cream);border:none;padding:.5rem 1rem;font-family:'DM Sans',sans-serif;font-size:.62rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;text-decoration:none;transition:background .2s;white-space:nowrap}
+        .nav-cta:hover{background:var(--gold)}
+        .admin-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.4rem .7rem;font-family:'DM Sans',sans-serif;font-size:.58rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .2s;white-space:nowrap}
+        .admin-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+        #hero{min-height:100svh;display:grid;place-items:center;text-align:center;padding:8rem 1.5rem 5rem;position:relative;overflow:hidden}
+        .hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 50% -10%,rgba(184,151,90,.06) 0%,transparent 65%)}
+        .hero-grid{position:absolute;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;opacity:.35;mask-image:radial-gradient(ellipse 80% 60% at 50% 100%,black,transparent)}
+        .hero-content{position:relative;z-index:1}
+        .hero-tag{display:inline-flex;align-items:center;gap:.6rem;font-size:.6rem;letter-spacing:.35em;text-transform:uppercase;color:var(--gold);margin-bottom:1.5rem;opacity:0;animation:fadeUp .8s ease 2.4s forwards}
+        .hero-tag::before,.hero-tag::after{content:'';width:24px;height:1px;background:var(--gold)}
+        .hero-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.8rem,12vw,6.5rem);font-weight:300;line-height:1.0;color:var(--dark);opacity:0;animation:fadeUp .9s ease 2.6s forwards}
+        .hero-title em{font-style:italic;color:var(--gold);display:block}
+        .hero-sub{font-size:.85rem;line-height:1.9;color:var(--muted);max-width:320px;margin:1.8rem auto 0;opacity:0;animation:fadeUp .9s ease 2.8s forwards}
+        .hero-actions{display:flex;gap:.8rem;flex-wrap:wrap;justify-content:center;margin-top:2.5rem;opacity:0;animation:fadeUp .9s ease 3s forwards}
+        .btn-primary{background:var(--dark);color:var(--cream);padding:.9rem 2rem;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:background .25s,transform .2s;display:inline-flex;align-items:center;min-height:48px}
+        .btn-primary:hover{background:var(--gold);transform:translateY(-2px)}
+        .btn-outline{background:transparent;color:var(--dark);padding:.9rem 2rem;border:1px solid var(--dark);cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;border-radius:2px;transition:all .25s;display:inline-flex;align-items:center;min-height:48px}
+        .btn-outline:hover{background:var(--dark);color:var(--cream)}
+        .hero-scroll{position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:.5rem;opacity:0;animation:fadeUp 1s ease 3.4s forwards}
+        .hero-scroll span{font-size:.56rem;letter-spacing:.28em;text-transform:uppercase;color:var(--muted)}
+        .scroll-dot{width:4px;height:4px;border-radius:50%;background:var(--gold);animation:scrollBounce 1.6s ease-in-out 3.7s infinite}
+        @keyframes scrollBounce{0%,100%{transform:translateY(0);opacity:1}50%{transform:translateY(10px);opacity:.3}}
+
+        .marquee-wrap{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:.7rem 0;background:var(--warm)}
+        .marquee-track{display:flex;gap:3rem;white-space:nowrap;animation:marquee 20s linear infinite}
+        .marquee-item{font-family:'Cormorant Garamond',serif;font-size:.9rem;font-style:italic;color:var(--muted);letter-spacing:.12em;flex-shrink:0}
+        .marquee-dot{color:var(--gold)}
+        @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+        .stats-bar{background:var(--dark);color:var(--cream);display:flex;justify-content:center;flex-wrap:wrap}
+        .stat-item{padding:1.5rem 1.8rem;text-align:center;border-right:1px solid rgba(255,255,255,.08);flex:1;min-width:100px}
+        .stat-item:last-child{border-right:none}
+        .stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:300;color:var(--gold-light);line-height:1}
+        .stat-label{font-size:.55rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-top:.3rem}
+
+        section{padding:4rem 1.2rem}
+        @media(min-width:600px){section{padding:5rem 1.5rem}}
+        .s-eyebrow{font-size:.58rem;letter-spacing:.38em;text-transform:uppercase;color:var(--gold);text-align:center;margin-bottom:.7rem}
+        .s-title{font-family:'Cormorant Garamond',serif;font-size:clamp(1.8rem,6vw,3.5rem);font-weight:300;text-align:center;color:var(--dark);line-height:1.15;margin-bottom:.5rem}
+        .s-sub{text-align:center;color:var(--muted);font-size:.82rem;line-height:1.8;max-width:340px;margin:0 auto 2.5rem}
+
+        #products{background:var(--warm)}
+        .toggle-row{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-bottom:2.5rem}
+        .toggle-btn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:.5rem 1.2rem;font-family:'DM Sans',sans-serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;transition:all .25s;min-height:44px}
+        .toggle-btn.active{background:var(--dark);color:var(--cream);border-color:var(--dark)}
+
+        .pgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem;max-width:1000px;margin:0 auto}
+        @media(min-width:640px){.pgrid{grid-template-columns:repeat(3,1fr);gap:1rem}}
+        @media(min-width:860px){.pgrid{grid-template-columns:repeat(4,1fr)}}
+        .pcard{background:var(--card);border-radius:3px;overflow:hidden;transition:transform .35s,box-shadow .35s;cursor:pointer;opacity:0;transform:translateY(18px)}
+        .pcard.visible{opacity:1;transform:translateY(0)}
+        @media(hover:hover){.pcard:hover{transform:translateY(-5px);box-shadow:0 18px 40px rgba(0,0,0,.1)}}
+        .pcard-img{position:relative;aspect-ratio:3/4;overflow:hidden;background:var(--border)}
+        /* .pcard-img img,.pcard-img video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s} */
+        .pcard-img img,.pcard-img video{width:100%;height:100%;object-fit:cover;display:block;transition:transform .5s}
+        .pcard-slide{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:0;transition:opacity .25s ease}
+        .pcard-slide.active{opacity:1}
+        .pcard-dots{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);display:flex;gap:4px;z-index:2}
+        .pcard-dot{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.45);transition:background .2s,transform .2s}
+        .pcard-dot.active{background:var(--gold);transform:scale(1.3)}
+        @media(hover:hover){.pcard:hover .pcard-img img,.pcard:hover .pcard-img video{transform:scale(1.06)}}
+        .pcard-num{position:absolute;top:8px;left:8px;background:rgba(26,22,18,.6);color:var(--gold-light);font-size:.58rem;letter-spacing:.15em;padding:.25rem .5rem;border-radius:2px}
+        .pcard-badge{position:absolute;top:8px;right:8px;background:rgba(26,22,18,.6);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+        .pcard-badge svg{width:12px;height:12px;fill:white}
+        .pcard-foot{padding:.65rem .6rem .75rem}
+        .pcard-type{font-size:.56rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem}
+        .buy-btn{display:flex;align-items:center;justify-content:center;width:100%;background:var(--dark);color:var(--cream);border:none;padding:.65rem;font-family:'DM Sans',sans-serif;font-size:.6rem;letter-spacing:.16em;text-transform:uppercase;cursor:pointer;border-radius:2px;text-decoration:none;transition:background .2s;min-height:44px}
+        .buy-btn:hover{background:var(--gold)}
+
+        .plist{max-width:700px;margin:0 auto;display:flex;flex-direction:column;gap:.5rem}
+        .plist-item{background:var(--card);border:1px solid var(--border);border-radius:3px;display:flex;align-items:center;gap:.85rem;padding:.65rem;transition:border-color .2s,transform .2s;opacity:0;transform:translateX(-12px)}
+        .plist-item.visible{opacity:1;transform:translateX(0)}
+        @media(hover:hover){.plist-item:hover{border-color:var(--gold);transform:translateX(3px)}}
+        .plist-thumb{width:58px;height:72px;border-radius:2px;overflow:hidden;flex-shrink:0;background:var(--border)}
+        @media(min-width:400px){.plist-thumb{width:64px;height:80px}}
+        .plist-thumb img,.plist-thumb video{width:100%;height:100%;object-fit:cover}
+        .plist-info{flex:1;min-width:0}
+        .plist-num{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.2rem}
+        .plist-name{font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .plist-meta{font-size:.6rem;color:var(--muted);margin-top:.15rem;text-transform:uppercase;letter-spacing:.1em}
+        .plist-action{flex-shrink:0}
+        .plist-btn{background:transparent;border:1px solid var(--border);color:var(--mid);padding:.45rem .75rem;font-family:'DM Sans',sans-serif;font-size:.6rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;border-radius:2px;text-decoration:none;display:inline-flex;align-items:center;min-height:40px;transition:all .2s}
+        .plist-btn:hover{background:var(--dark);color:var(--cream);border-color:var(--dark)}
+
+        .p-empty{text-align:center;padding:4rem 1rem;color:var(--muted)}
+        .p-empty-icon{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold-light);opacity:.4;margin-bottom:1rem}
+        .p-empty h3{font-family:'Cormorant Garamond',serif;font-weight:300;font-size:1.4rem;margin-bottom:.5rem}
+        .p-empty p{font-size:.82rem;line-height:1.8;max-width:300px;margin:0 auto}
+        .p-loading{text-align:center;padding:4rem 1rem;color:var(--muted)}
+        .p-spinner{width:36px;height:36px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 1rem}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .p-loading p{font-size:.78rem;letter-spacing:.12em;text-transform:uppercase}
+
+        #story{background:var(--dark);color:var(--cream);text-align:center}
+        .story-quote{font-family:'Cormorant Garamond',serif;font-size:clamp(1.3rem,4vw,2rem);font-style:italic;font-weight:300;color:var(--gold-light);max-width:460px;margin:0 auto 1rem;line-height:1.6}
+        .story-divider{width:40px;height:1px;background:var(--gold);margin:2rem auto}
+        .story-text{color:rgba(250,247,242,.5);font-size:.82rem;line-height:1.9;max-width:380px;margin:0 auto 2.5rem}
+        .founders{display:flex;flex-wrap:wrap;justify-content:center;gap:1rem}
+        .fcard{border:1px solid rgba(255,255,255,.08);border-radius:4px;padding:1.4rem 2rem;transition:border-color .3s,background .3s}
+        .fcard:hover{border-color:var(--gold);background:rgba(184,151,90,.05)}
+        .fname{font-family:'Cormorant Garamond',serif;font-size:1.3rem;color:var(--cream);margin-bottom:.3rem}
+        .frole{font-size:.58rem;letter-spacing:.22em;text-transform:uppercase;color:var(--gold-light)}
+
+        #contact{background:var(--warm);text-align:center}
+        .ccards{display:flex;flex-direction:column;gap:1rem;max-width:400px;margin:0 auto}
+        .ccard{background:#fff;border:1px solid var(--border);border-radius:8px;padding:1.4rem 1.2rem;display:flex;align-items:center;gap:1rem;text-decoration:none;transition:border-color .25s,transform .25s,box-shadow .25s}
+        .ccard:hover{border-color:var(--gold);transform:translateY(-3px);box-shadow:0 10px 28px rgba(0,0,0,.07)}
+        .cicon{width:44px;height:44px;border-radius:50%;background:var(--dark);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+        .cicon svg{width:20px;height:20px}
+        .cinfo{text-align:left}
+        .clabel{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.2rem}
+        .cname{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--dark)}
+        .cnum{font-size:.76rem;color:var(--muted);margin-top:.1rem}
+
+        footer{background:var(--dark);color:var(--cream);text-align:center;padding:2.5rem 1.5rem}
+        .fb{font-family:'Cormorant Garamond',serif;font-size:1.3rem;letter-spacing:.18em;margin-bottom:.3rem}
+        .ft{font-size:.58rem;letter-spacing:.28em;text-transform:uppercase;color:rgba(255,255,255,.25)}
+        .fd{width:30px;height:1px;background:var(--gold);margin:1.2rem auto}
+        .fc{font-size:.65rem;color:rgba(255,255,255,.2)}
+
+        /* #lb{display:none;position:fixed;inset:0;background:rgba(10,9,8,.94);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px)}
+        #lb.open{display:flex}
+        .lb-box{max-width:420px;width:100%;background:#fff;border-radius:6px;overflow:hidden;animation:scIn .25s ease}
+        @keyframes scIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+        .lb-media{width:100%;aspect-ratio:3/4;background:var(--border);max-height:65svh;overflow:hidden}
+        .lb-media img,.lb-media video{width:100%;height:100%;object-fit:cover;display:block}
+        .lb-act{padding:1rem}
+        .lb-buy{display:flex;align-items:center;justify-content:center;width:100%;background:var(--dark);color:var(--cream);padding:.85rem;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;border-radius:2px;text-decoration:none;transition:background .2s;min-height:48px}
+        .lb-buy:hover{background:var(--gold)}
+        .lb-close{position:fixed;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:501}
+        .lb-close:hover{background:rgba(255,255,255,.25)} */
+
+
+
+        #lb{display:none;position:fixed;inset:0;background:rgba(10,9,8,.94);z-index:500;align-items:center;justify-content:center;padding:1rem;backdrop-filter:blur(10px);overflow-y:auto}
+        #lb.open{display:flex}
+        .lb-box{max-width:780px;width:100%;background:#fff;border-radius:8px;overflow:hidden;animation:scIn .25s ease;display:flex;flex-direction:column;max-height:95svh}
+        @media(min-width:640px){.lb-box{flex-direction:row;max-height:90svh}}
+        @keyframes scIn{from{transform:scale(.92);opacity:0}to{transform:scale(1);opacity:1}}
+
+        /* Carousel side */
+        .lb-carousel{position:relative;background:var(--border);flex-shrink:0}
+        @media(max-width:639px){.lb-carousel{width:100%;aspect-ratio:3/4;max-height:55svh}}
+        @media(min-width:640px){.lb-carousel{width:340px;aspect-ratio:3/4}}
+        .lb-main-img{width:100%;height:100%;object-fit:cover;display:block}
+        .lb-nav{position:absolute;top:50%;transform:translateY(-50%);width:100%;display:flex;justify-content:space-between;padding:0 .5rem;pointer-events:none}
+        .lb-arrow{pointer-events:all;background:rgba(26,22,18,.6);border:none;color:#fff;width:36px;height:36px;border-radius:50%;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+        .lb-arrow:hover{background:rgba(184,151,90,.8)}
+        .lb-dots{position:absolute;bottom:.6rem;left:50%;transform:translateX(-50%);display:flex;gap:.35rem}
+        .lb-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.45);border:none;cursor:pointer;padding:0;transition:background .2s,transform .2s}
+        .lb-dot.active{background:var(--gold);transform:scale(1.3)}
+        .lb-img-counter{position:absolute;top:.6rem;right:.6rem;background:rgba(26,22,18,.6);color:var(--gold-light);font-size:.58rem;letter-spacing:.12em;padding:.2rem .5rem;border-radius:2px}
+
+        /* Details side */
+        .lb-details{flex:1;display:flex;flex-direction:column;padding:1.5rem 1.2rem 1.2rem;overflow-y:auto;min-width:0}
+        .lb-tag{font-size:.55rem;letter-spacing:.3em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem}
+        .lb-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--dark);line-height:1.2;margin-bottom:.6rem}
+        .lb-price{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--dark);margin-bottom:.8rem}
+        .lb-price span{font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.1em;color:var(--muted);margin-left:.3rem}
+        .lb-desc{font-size:.8rem;line-height:1.8;color:var(--muted);margin-bottom:.8rem;white-space:pre-wrap}
+        .lb-size{background:var(--warm);border-radius:6px;padding:.7rem .9rem;margin-bottom:1rem}
+        .lb-size-label{font-size:.55rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:.3rem}
+        .lb-size-val{font-size:.8rem;color:var(--mid)}
+        .lb-divider{height:1px;background:var(--border);margin:.6rem 0}
+        .lb-buy{display:flex;align-items:center;justify-content:center;width:100%;background:var(--dark);color:var(--cream);padding:.85rem;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;border-radius:2px;text-decoration:none;transition:background .2s;min-height:48px;margin-top:auto}
+        .lb-buy:hover{background:var(--gold)}
+        .lb-close{position:fixed;top:1.2rem;right:1.2rem;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.18);color:#fff;width:44px;height:44px;border-radius:50%;font-size:1.1rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s;z-index:501}
+        .lb-close:hover{background:rgba(255,255,255,.25)}
+        .reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+        .reveal.visible{opacity:1;transform:translateY(0)}
+
+        /* ADMIN LOGIN */
+        #admin-login{display:none;position:fixed;inset:0;background:rgba(10,9,8,.96);z-index:1000;align-items:center;justify-content:center;backdrop-filter:blur(12px);padding:1rem}
+        #admin-login.open{display:flex}
+        .login-box{background:var(--dark);border:1px solid rgba(184,151,90,.25);border-radius:10px;padding:2.5rem;width:100%;max-width:360px;animation:scIn .25s ease;position:relative}
+        .login-logo{font-family:'Cormorant Garamond',serif;font-size:2rem;color:var(--gold);letter-spacing:.2em;text-align:center;margin-bottom:.3rem}
+        .login-sub{font-size:.6rem;letter-spacing:.3em;text-transform:uppercase;color:rgba(255,255,255,.3);text-align:center;margin-bottom:2rem}
+        .login-field{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);color:var(--cream);padding:.85rem 1rem;font-family:'DM Sans',sans-serif;font-size:.9rem;border-radius:5px;margin-bottom:1rem;outline:none;transition:border-color .2s;-webkit-appearance:none}
+        .login-field:focus{border-color:var(--gold)}
+        .login-field::placeholder{color:rgba(255,255,255,.28)}
+        .login-submit{width:100%;background:var(--gold);color:var(--dark);border:none;padding:.9rem;font-family:'DM Sans',sans-serif;font-size:.7rem;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;border-radius:5px;transition:opacity .2s;font-weight:500;min-height:48px}
+        .login-submit:hover{opacity:.85}
+        .login-err{color:#ef9a9a;font-size:.72rem;text-align:center;margin-top:.7rem;display:none}
+        .login-x{position:absolute;top:1rem;right:1rem;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:#fff;width:36px;height:36px;border-radius:50%;font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+        /* ADMIN PANEL */
+        #admin-panel{display:none;position:fixed;inset:0;z-index:900;background:#0f0e0c;overflow-y:auto;-webkit-overflow-scrolling:touch}
+        #admin-panel.open{display:block}
+        .ap-header{background:rgba(0,0,0,.5);border-bottom:1px solid rgba(184,151,90,.18);padding:1rem 1.2rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:10;backdrop-filter:blur(10px)}
+        .ap-logo{font-family:'Cormorant Garamond',serif;font-size:1.1rem;color:var(--gold);letter-spacing:.12em}
+        .ap-sub{font-size:.52rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.28);margin-top:.1rem}
+        .ap-logout{background:transparent;border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.55);padding:.5rem .9rem;font-family:'DM Sans',sans-serif;font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .2s;min-height:40px}
+        .ap-logout:hover{border-color:var(--gold);color:var(--gold)}
+        .ap-body{padding:1.5rem 1rem;max-width:880px;margin:0 auto}
+        @media(min-width:600px){.ap-body{padding:2rem 1.5rem}}
+        .ap-sec{font-family:'Cormorant Garamond',serif;font-size:1.35rem;color:var(--cream);font-weight:300;margin-bottom:1.2rem;padding-bottom:.6rem;border-bottom:1px solid rgba(255,255,255,.07)}
+
+        .info-box{background:rgba(184,151,90,.06);border:1px solid rgba(184,151,90,.2);border-radius:8px;padding:1.1rem 1.2rem;margin-bottom:2rem;font-size:.75rem;color:rgba(255,255,255,.55);line-height:1.8}
+        .info-box b{color:var(--gold-light)}
+
+        .up-zone{border:2px dashed rgba(184,151,90,.25);border-radius:8px;padding:2rem 1.2rem;text-align:center;position:relative;cursor:pointer;transition:all .3s;margin-bottom:2rem}
+        .up-zone:hover,.up-zone.drag{border-color:var(--gold);background:rgba(184,151,90,.04)}
+        .up-zone input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+        .up-icon{font-size:2rem;margin-bottom:.6rem;opacity:.45}
+        .up-title{font-family:'Cormorant Garamond',serif;font-size:1.25rem;color:var(--cream);font-weight:300;margin-bottom:.35rem}
+        .up-hint{font-size:.72rem;color:rgba(255,255,255,.3);line-height:1.6}
+        .up-hint b{color:var(--gold-light)}
+        .up-prog{margin-top:1rem;display:none}
+        .up-bar{height:3px;background:rgba(255,255,255,.1);border-radius:2px;overflow:hidden;margin-top:.4rem}
+        .up-fill{height:100%;width:0;background:var(--gold);transition:width .3s}
+        .up-txt{font-size:.67rem;color:rgba(255,255,255,.35);letter-spacing:.08em}
+
+        .ag{display:grid;grid-template-columns:repeat(2,1fr);gap:.6rem}
+        @media(min-width:480px){.ag{grid-template-columns:repeat(3,1fr)}}
+        @media(min-width:700px){.ag{grid-template-columns:repeat(4,1fr)}}
+        .acard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:6px;overflow:hidden;transition:border-color .2s}
+        .acard:hover{border-color:rgba(184,151,90,.35)}
+        .athumb{position:relative;aspect-ratio:3/4;overflow:hidden;background:rgba(255,255,255,.05)}
+        .athumb img,.athumb video{width:100%;height:100%;object-fit:cover;display:block}
+        .adel{position:absolute;top:6px;right:6px;background:rgba(200,40,40,.82);border:none;color:#fff;width:30px;height:30px;border-radius:50%;font-size:.95rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+        .adel:hover{background:#b71c1c}
+        .aarrows{position:absolute;top:6px;left:6px;display:flex;flex-direction:column;gap:3px}
+        .abtn{background:rgba(26,22,18,.72);border:none;color:var(--gold-light);width:26px;height:26px;border-radius:3px;cursor:pointer;font-size:.85rem;display:flex;align-items:center;justify-content:center;transition:background .2s}
+        .abtn:hover{background:rgba(184,151,90,.55)}
+        .aseq{position:absolute;bottom:6px;left:6px;background:rgba(26,22,18,.7);color:var(--gold-light);font-size:.54rem;letter-spacing:.12em;padding:.2rem .45rem;border-radius:2px}
+        .ainfo{padding:.5rem .6rem .6rem;font-size:.6rem;color:rgba(255,255,255,.35);letter-spacing:.08em;text-transform:uppercase}
+        /* .ano-prod{grid-column:1/-1;text-align:center;padding:2.5rem;color:rgba(255,255,255,.22);font-family:'Cormorant Garamond',serif;font-size:1.15rem} */
+
+        .ano-prod{grid-column:1/-1;text-align:center;padding:2.5rem;color:rgba(255,255,255,.22);font-family:'Cormorant Garamond',serif;font-size:1.15rem}
+
+        /* Product form */
+        .pform{background:rgba(255,255,255,.04);border:1px solid rgba(184,151,90,.2);border-radius:10px;padding:1.5rem 1.2rem;margin-bottom:2rem}
+        .pform-grid{display:grid;grid-template-columns:1fr 1fr;gap:.8rem;margin-bottom:.8rem}
+        @media(max-width:500px){.pform-grid{grid-template-columns:1fr}}
+        .pf-label{font-size:.58rem;letter-spacing:.18em;text-transform:uppercase;color:rgba(255,255,255,.35);margin-bottom:.35rem;display:block}
+        .pf-input{width:100%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--cream);padding:.75rem .9rem;font-family:'DM Sans',sans-serif;font-size:.88rem;border-radius:5px;outline:none;transition:border-color .2s}
+        .pf-input:focus{border-color:var(--gold)}
+        .pf-input::placeholder{color:rgba(255,255,255,.22)}
+        .pf-full{grid-column:1/-1}
+        .pf-textarea{resize:vertical;min-height:80px}
+        .pf-submit{background:var(--gold);color:var(--dark);border:none;padding:.85rem 2rem;font-family:'DM Sans',sans-serif;font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;cursor:pointer;border-radius:5px;font-weight:500;min-height:44px;transition:opacity .2s;margin-top:.5rem}
+        .pf-submit:hover{opacity:.85}
+        .pf-hint{font-size:.68rem;color:rgba(255,255,255,.3);margin-top:.5rem;line-height:1.7}
+
+        /* Admin product cards (grouped) */
+        .apg{display:flex;flex-direction:column;gap:1.2rem}
+        .ap-pcard{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:8px;overflow:hidden;transition:border-color .2s}
+        .ap-pcard:hover{border-color:rgba(184,151,90,.3)}
+        .ap-pcard-head{display:flex;align-items:center;gap:.85rem;padding:.8rem 1rem;border-bottom:1px solid rgba(255,255,255,.06)}
+        .ap-pthumb{width:52px;height:64px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.06);flex-shrink:0}
+        .ap-pthumb img{width:100%;height:100%;object-fit:cover}
+        .ap-pinfo{flex:1;min-width:0}
+        .ap-pname{font-family:'Cormorant Garamond',serif;font-size:1.05rem;color:var(--cream);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .ap-pprice{font-size:.7rem;color:var(--gold-light);margin-top:.15rem}
+        .ap-pactions{display:flex;gap:.4rem;flex-shrink:0}
+        .ap-pa{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.55);padding:.4rem .65rem;font-size:.6rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;border-radius:3px;transition:all .2s;min-height:34px}
+        .ap-pa:hover{border-color:var(--gold);color:var(--gold)}
+        .ap-pa.del:hover{border-color:#ef9a9a;color:#ef9a9a}
+        .ap-imgs{display:flex;gap:.5rem;padding:.75rem 1rem;overflow-x:auto;scrollbar-width:thin}
+        .ap-img-item{position:relative;flex-shrink:0;width:70px;height:88px;border-radius:4px;overflow:hidden;background:rgba(255,255,255,.06)}
+        .ap-img-item img{width:100%;height:100%;object-fit:cover;display:block}
+        .ap-img-del{position:absolute;top:3px;right:3px;background:rgba(200,40,40,.82);border:none;color:#fff;width:22px;height:22px;border-radius:50%;font-size:.7rem;cursor:pointer;display:flex;align-items:center;justify-content:center}
+        .ap-img-badge{position:absolute;bottom:3px;left:3px;background:rgba(26,22,18,.7);color:var(--gold-light);font-size:.5rem;padding:.15rem .3rem;border-radius:2px}
+        .ap-add-img{flex-shrink:0;width:70px;height:88px;border-radius:4px;border:2px dashed rgba(184,151,90,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:1.4rem;color:rgba(184,151,90,.5);transition:all .2s;position:relative}
+        .ap-add-img:hover{border-color:var(--gold);color:var(--gold)}
+        .ap-add-img input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+
+
+        #toast{position:fixed;bottom:1.5rem;left:50%;transform:translateX(-50%) translateY(10px);background:var(--dark);border:1px solid var(--gold);color:var(--cream);padding:.75rem 1.3rem;border-radius:6px;font-size:.73rem;z-index:9999;opacity:0;transition:all .3s;pointer-events:none;white-space:nowrap}
+        #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+    </style>
+</head>
+<body>
+    <div id="cur"></div><div id="cur2"></div>
+
+    <div id="splash">
+        <div class="sp-ring"></div><div class="sp-ring"></div><div class="sp-ring"></div>
+        <div class="sp-monogram">TSS</div>
+        <div class="sp-name">The Suit Story</div>
+        <div class="sp-bar"></div>
+    </div>
+
+    <nav>
+        <a class="nav-brand" href="#hero">The Suit Story</a>
+        <ul class="nav-links">
+            <li><a href="#products">Collection</a></li>
+            <li><a href="#story">Story</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+        <div class="nav-right">
+            <button class="admin-btn" onclick="openLogin()">Admin</button>
+            <a class="nav-cta" href="#products">Shop Now</a>
+        </div>
+    </nav>
+
+    <section id="hero">
+        <div class="hero-bg"></div><div class="hero-grid"></div>
+        <div class="hero-content">
+            <p class="hero-tag">Ethnic Couture · Est. 2025</p>
+            <h1 class="hero-title">Where Every<br/><em>Suit</em><br/>Tells A Story</h1>
+            <p class="hero-sub">Handcrafted ethnic wear that speaks the language of elegance, tradition, and modern grace.</p>
+            <div class="hero-actions">
+                <a class="btn-primary" href="#products">Explore Collection</a>
+                <a class="btn-outline" href="#contact">Contact Us</a>
+            </div>
+        </div>
+        <div class="hero-scroll"><span>Scroll</span><div class="scroll-dot"></div></div>
+    </section>
+
+    <div class="marquee-wrap"><div class="marquee-track" id="mtrack"></div></div>
+
+    <div class="stats-bar">
+        <div class="stat-item"><div class="stat-num" id="stat-count">0</div><div class="stat-label">Pieces Available</div></div>
+        <div class="stat-item"><div class="stat-num">2025</div><div class="stat-label">Est. Year</div></div>
+        <div class="stat-item"><div class="stat-num">100%</div><div class="stat-label">Handcrafted</div></div>
+        <div class="stat-item"><div class="stat-num">∞</div><div class="stat-label">Stories Told</div></div>
+    </div>
+
+    <section id="products">
+        <p class="s-eyebrow reveal">Our Collection</p>
+        <h2 class="s-title reveal">Latest Arrivals</h2>
+        <p class="s-sub reveal">Fresh drops, straight from our studio to your wardrobe.</p>
+        <div class="toggle-row reveal">
+            <button class="toggle-btn active" id="btn-grid" onclick="setView('grid')">Grid</button>
+            <button class="toggle-btn" id="btn-list" onclick="setView('list')">List</button>
+        </div>
+        <div id="prod-wrap"></div>
+    </section>
+
+    <section id="story">
+        <p class="s-eyebrow reveal" style="color:var(--gold-light)">Our Story</p>
+        <p class="story-quote reveal">Fashion fades, but a well-told story in fabric — that lives forever.</p>
+        <div class="story-divider reveal"></div>
+        <p class="story-text reveal">Born from a love for Indian craftsmanship and contemporary sensibility, The Suit Story brings you ethnic wear that doesn't just dress you — it defines you.</p>
+        <div class="founders reveal">
+            <div class="fcard"><div class="fname">Suhani Lodha</div><div class="frole">Co-Founder</div></div>
+            <div class="fcard"><div class="fname">Richi Lodha</div><div class="frole">Co-Founder</div></div>
+        </div>
+    </section>
+
+    <section id="contact">
+        <p class="s-eyebrow reveal">Get In Touch</p>
+        <h2 class="s-title reveal">Let's Connect</h2>
+        <p class="s-sub reveal">Tap to chat with us directly on WhatsApp.</p>
+        <div class="ccards reveal">
+            <a class="ccard" href="https://wa.me/919425982653?text=Hi%20Suhani!%20I%20saw%20The%20Suit%20Story%20collection%20and%20I'm%20interested%20%F0%9F%8C%B8" target="_blank">
+                <div class="cicon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.065-1.112l-.291-.173-3.022.898.898-3.022-.173-.291A7.96 7.96 0 014 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8z" fill="#25D366"/></svg></div>
+                <div class="cinfo"><div class="clabel">Co-Founder</div><div class="cname">Suhani Lodha</div><div class="cnum">+91 94259 82653</div></div>
+            </a>
+            <a class="ccard" href="https://wa.me/918120126881?text=Hi%20Richi!%20I%20saw%20The%20Suit%20Story%20collection%20and%20I'm%20interested%20%F0%9F%8C%B8" target="_blank">
+                <div class="cicon"><svg viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z" fill="#25D366"/><path d="M12 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.832-1.438A9.96 9.96 0 0012 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18a7.96 7.96 0 01-4.065-1.112l-.291-.173-3.022.898.898-3.022-.173-.291A7.96 7.96 0 014 12c0-4.418 3.582-8 8-8s8 3.582 8 8-3.582 8-8 8z" fill="#25D366"/></svg></div>
+                <div class="cinfo"><div class="clabel">Co-Founder</div><div class="cname">Richi Lodha</div><div class="cnum">+91 81201 26881</div></div>
+            </a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="fb">The Suit Story</div>
+        <div class="ft">Where Every Suit Tells a Story</div>
+        <div class="fd"></div>
+        <div class="fc">© 2026 The Suit Story · Suhani & Richi Lodha</div>
+    </footer>
+<!-- 
+    <div id="lb">
+        <button class="lb-close" onclick="closeLb()">✕</button>
+        <div class="lb-box">
+            <div class="lb-media" id="lb-media"></div>
+            <div class="lb-act"><a id="lb-wa" class="lb-buy" href="#" target="_blank">Buy Now on WhatsApp</a></div>
+        </div>
+    </div> -->
+
+
+
+    <div id="lb">
+        <button class="lb-close" onclick="closeLb()">✕</button>
+        <div class="lb-box">
+            <div class="lb-carousel">
+                <img class="lb-main-img" id="lb-main-img" src="" alt="" />
+                <div class="lb-nav">
+                    <button class="lb-arrow" id="lb-prev" onclick="lbNav(-1)">‹</button>
+                    <button class="lb-arrow" id="lb-next" onclick="lbNav(1)">›</button>
+                </div>
+                <div class="lb-dots" id="lb-dots"></div>
+                <div class="lb-img-counter" id="lb-counter"></div>
+            </div>
+            <div class="lb-details">
+                <div class="lb-tag">The Suit Story</div>
+                <div class="lb-title" id="lb-title"></div>
+                <div class="lb-price" id="lb-price"></div>
+                <div class="lb-desc" id="lb-desc"></div>
+                <div class="lb-size" id="lb-size-wrap">
+                    <div class="lb-size-label">Size / Fit Info</div>
+                    <div class="lb-size-val" id="lb-size"></div>
+                </div>
+                <div class="lb-divider"></div>
+                <a id="lb-wa" class="lb-buy" href="#" target="_blank">🛒 Buy Now on WhatsApp</a>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ADMIN LOGIN -->
+    <div id="admin-login">
+        <div class="login-box">
+            <button class="login-x" onclick="closeLogin()">✕</button>
+            <div class="login-logo">TSS</div>
+            <div class="login-sub">Admin Access</div>
+            <input class="login-field" type="password" id="lpass" placeholder="Enter password" onkeydown="if(event.key==='Enter')doLogin()"/>
+            <button class="login-submit" onclick="doLogin()">Enter Admin Panel</button>
+            <div class="login-err" id="lerr">❌ Incorrect password!</div>
+        </div>
+    </div>
+
+    <!-- ADMIN PANEL -->
+    <div id="admin-panel">
+        <div class="ap-header">
+            <div><div class="ap-logo">The Suit Story — Admin</div><div class="ap-sub">Product Management</div></div>
+            <button class="ap-logout" onclick="doLogout()">Logout ✕</button>
+        </div>
+        <div class="ap-body">
+            <!-- <p class="ap-sec">📸 Upload Photos & Videos</p>
+            <div class="info-box">
+                ✓ <b>Fully synced</b> — Upload karo yahan se, <b>har device pe automatically dikhe ga</b>.<br/>
+                Images & videos Cloudinary ke <b>tss</b> folder mein save hoti hain via Netlify backend.
+            </div>
+            <div class="up-zone" id="upzone">
+                <input type="file" id="afiles" multiple accept="image/*,video/mp4,video/webm,video/quicktime" onchange="doUpload(this.files)"/>
+                <div class="up-icon">✦</div>
+                <div class="up-title">Drop Files Here or Tap to Select</div>
+                <p class="up-hint">JPG · PNG · WEBP · GIF · <b>MP4 · MOV · WEBM</b> — Multiple at once</p>
+                <div class="up-prog" id="uprog">
+                    <div class="up-txt" id="utxt">Uploading…</div>
+                    <div class="up-bar"><div class="up-fill" id="ufill"></div></div>
+                </div>
+            </div>
+            <p class="ap-sec">🗂️ Live Collection (<span id="pcnt">0</span> pieces)</p>
+            <div class="ag" id="agrid"></div> -->
+
+
+            <p class="ap-sec">➕ Add New Product</p>
+            <div class="info-box">
+                ✓ <b>Naya product banao</b> — title, price, description, size likho aur <b>1–5 photos</b> upload karo.<br />
+                Sab kuch Cloudinary mein save hota hai — <b>har device pe automatically dikhe ga</b>.
+            </div>
+            <div class="pform">
+                <div class="pform-grid">
+                    <div>
+                        <label class="pf-label">Product Title *</label>
+                        <input class="pf-input" type="text" id="pf-title" placeholder="e.g. Royal Blue Anarkali" />
+                    </div>
+                    <div>
+                        <label class="pf-label">Price (₹) *</label>
+                        <input class="pf-input" type="number" id="pf-price" placeholder="e.g. 2499" />
+                    </div>
+                    <div class="pf-full">
+                        <label class="pf-label">Description</label>
+                        <textarea class="pf-input pf-textarea" id="pf-desc"
+                            placeholder="Fabric, occasion, special details..."></textarea>
+                    </div>
+                    <div class="pf-full">
+                        <label class="pf-label">Size / Fit Info</label>
+                        <input class="pf-input" type="text" id="pf-size" placeholder="e.g. XS to XXL available, regular fit" />
+                    </div>
+                </div>
+                <div class="up-zone" id="upzone" style="margin-bottom:.8rem">
+                    <input type="file" id="afiles" multiple accept="image/jpeg,image/png,image/webp,image/gif"
+                        onchange="selectFiles(this.files)" />
+                    <div class="up-icon">📸</div>
+                    <div class="up-title">Select Product Photos</div>
+                    <p class="up-hint">1 se 5 <b>images</b> select karo (JPG · PNG · WEBP) · Pehli image = main display photo</p>
+                    <div id="pf-preview" style="display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center;margin-top:.8rem">
+                    </div>
+                    <div class="up-prog" id="uprog">
+                        <div class="up-txt" id="utxt">Uploading…</div>
+                        <div class="up-bar">
+                            <div class="up-fill" id="ufill"></div>
+                        </div>
+                    </div>
+                </div>
+                <p class="pf-hint" id="pf-file-hint">Koi file select nahi hui</p>
+                <button class="pf-submit" onclick="createProduct()">✦ Create Product & Upload</button>
+            </div>
+            
+            <p class="ap-sec">🗂️ Live Collection (<span id="pcnt">0</span> products)</p>
+            <div class="apg" id="agrid"></div>
+
+
+        </div>
+    </div>
+
+    <div id="toast"></div>
+
+    <!-- <script>
+        // ═══ CONFIG ═══
+        const PASS = "admin123";
+        const SNUM = "919425982653";   // Suhani — odd  products (1,3,5…)
+        const RNUM = "918120126881";   // Richi  — even products (2,4,6…)
+        const OK   = "tss_order";
+        const HK   = "tss_hidden";
+        const API  = "/.netlify/functions/media";   // Netlify function endpoint
+
+        const waNum  = i => (i % 2 === 0) ? SNUM : RNUM;
+        const waLink = (num, phone) => `https://wa.me/${phone}?text=${encodeURIComponent(`Hi! I'm interested in piece #${num} from The Suit Story 🌸`)}`;
+
+        // Cursor
+        const c1=document.getElementById('cur'),c2=document.getElementById('cur2');
+        document.addEventListener('mousemove',e=>{c1.style.left=e.clientX+'px';c1.style.top=e.clientY+'px';c2.style.left=e.clientX+'px';c2.style.top=e.clientY+'px';});
+
+        // Splash
+        window.addEventListener('load',()=>{setTimeout(()=>{const s=document.getElementById('splash');s.style.opacity='0';s.style.pointerEvents='none';setTimeout(()=>s.style.display='none',800);},2800);});
+
+        // Marquee
+        const mt=document.getElementById('mtrack');
+        ['Handcrafted Ethnic Wear','Studio to Wardrobe','Modern Grace','Indian Heritage','Tailored Elegance','The Suit Story',
+         'Handcrafted Ethnic Wear','Studio to Wardrobe','Modern Grace','Indian Heritage','Tailored Elegance','The Suit Story']
+        .forEach(t=>{const e=document.createElement('span');e.className='marquee-item';e.innerHTML=`${t} <span class="marquee-dot">✦</span>`;mt.appendChild(e);});
+
+        // Reveal
+        const rio=new IntersectionObserver(e=>e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible');}),{threshold:.08});
+        document.querySelectorAll('.reveal').forEach(el=>rio.observe(el));
+
+        // Storage (order + hidden only — no credentials needed anymore)
+        const gOrd = ()=>{try{return JSON.parse(localStorage.getItem(OK))||[];}catch{return[];}};
+        const sOrd = a=>localStorage.setItem(OK,JSON.stringify(a));
+        const gHid = ()=>{try{return JSON.parse(localStorage.getItem(HK))||[];}catch{return[];}};
+        const sHid = a=>localStorage.setItem(HK,JSON.stringify(a));
+
+        // Toast
+        function toast(m,d=2800){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),d);}
+
+        // ═══ FETCH from Netlify Function ═══
+        let cachedMedia = null;
+
+        async function fetchMedia(force=false) {
+            if (cachedMedia && !force) return cachedMedia;
+            try {
+                const res = await fetch(`${API}?action=list`);
+                const data = await res.json();
+                let all = data.resources || [];
+
+                // Apply custom order
+                const ord = gOrd();
+                if (ord.length) {
+                    const map = Object.fromEntries(all.map(x=>[x.public_id,x]));
+                    const ordered = ord.map(id=>map[id]).filter(Boolean);
+                    const rest = all.filter(x=>!ord.includes(x.public_id));
+                    all = [...ordered, ...rest];
+                }
+
+                // Filter hidden
+                const hid = gHid();
+                if (hid.length) all = all.filter(x=>!hid.includes(x.public_id));
+
+                cachedMedia = all;
+                return all;
+            } catch(e) {
+                console.error('Fetch failed:', e);
+                return [];
+            }
+        }
+
+        // ═══ PUBLIC RENDER ═══
+        let view = 'grid';
+        function setView(v){view=v;document.getElementById('btn-grid').classList.toggle('active',v==='grid');document.getElementById('btn-list').classList.toggle('active',v==='list');renderPublic();}
+
+        async function renderPublic() {
+            const w = document.getElementById('prod-wrap');
+            w.innerHTML = '<div class="p-loading"><div class="p-spinner"></div><p>Loading Collection…</p></div>';
+            const P = await fetchMedia();
+            w.innerHTML = '';
+            document.getElementById('stat-count').textContent = P.length;
+
+            if (!P.length) {
+                w.innerHTML='<div class="p-empty"><div class="p-empty-icon">✦</div><h3>Collection Coming Soon</h3><p>New designs on the way. Contact us on WhatsApp.</p></div>';
+                return;
+            }
+
+            if (view === 'grid') {
+                const g = document.createElement('div'); g.className='pgrid';
+                P.forEach((p,i)=>{
+                    const num=i+1, phone=waNum(i), wl=waLink(num,phone), v=p.type==='video';
+                    const card=document.createElement('div'); card.className='pcard'; card.style.transitionDelay=`${i*.04}s`;
+                    card.innerHTML=`<div class="pcard-img" onclick="openLb('${p.url}','${wl}',${v})">${v?`<video src="${p.url}" muted loop playsinline preload="metadata"></video>`:`<img src="${p.url}" alt="Suit ${num}" loading="lazy"/>`}<div class="pcard-num">${String(num).padStart(2,'0')}</div>${v?'<div class="pcard-badge"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>':''}</div><div class="pcard-foot"><div class="pcard-type">${v?'Reel':'Photo'}</div><a class="buy-btn" href="${wl}" target="_blank">Buy Now</a></div>`;
+                    if(v){const ve=card.querySelector('video');card.addEventListener('mouseenter',()=>ve.play());card.addEventListener('mouseleave',()=>{ve.pause();ve.currentTime=0;});}
+                    g.appendChild(card);
+                });
+                w.appendChild(g);
+            } else {
+                const l=document.createElement('div'); l.className='plist';
+                P.forEach((p,i)=>{
+                    const num=i+1, phone=waNum(i), wl=waLink(num,phone), v=p.type==='video';
+                    const item=document.createElement('div'); item.className='plist-item'; item.style.transitionDelay=`${i*.03}s`;
+                    item.innerHTML=`<div class="plist-thumb" onclick="openLb('${p.url}','${wl}',${v})">${v?`<video src="${p.url}" muted preload="metadata"></video>`:`<img src="${p.url}" loading="lazy"/>`}</div><div class="plist-info"><div class="plist-num">No. ${String(num).padStart(2,'0')}</div><div class="plist-name">The Suit Story — Piece ${num}</div><div class="plist-meta">${v?'Reel':'Photo'}</div></div><div class="plist-action"><a class="plist-btn" href="${wl}" target="_blank">Buy</a></div>`;
+                    l.appendChild(item);
+                });
+                w.appendChild(l);
+            }
+            setTimeout(()=>{document.querySelectorAll('.pcard,.plist-item').forEach(el=>{const o=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting){x.target.classList.add('visible');o.unobserve(x.target);}});},{threshold:.05});o.observe(el);});},50);
+        }
+
+        // ═══ ADMIN ═══
+        function openLogin(){document.getElementById('admin-login').classList.add('open');setTimeout(()=>document.getElementById('lpass').focus(),100);}
+        function closeLogin(){document.getElementById('admin-login').classList.remove('open');document.getElementById('lpass').value='';document.getElementById('lerr').style.display='none';}
+        function doLogin(){if(document.getElementById('lpass').value===PASS){closeLogin();openPanel();}else{document.getElementById('lerr').style.display='block';document.getElementById('lpass').value='';document.getElementById('lpass').focus();}}
+
+        function openPanel(){
+            document.getElementById('admin-panel').classList.add('open');
+            document.body.style.overflow='hidden';
+            renderAdmin();
+        }
+        function doLogout(){document.getElementById('admin-panel').classList.remove('open');document.body.style.overflow='';toast('Logged out ✓');}
+
+        // Drag & drop
+        const uz=document.getElementById('upzone');
+        uz.addEventListener('dragover',e=>{e.preventDefault();uz.classList.add('drag');});
+        uz.addEventListener('dragleave',()=>uz.classList.remove('drag'));
+        uz.addEventListener('drop',e=>{e.preventDefault();uz.classList.remove('drag');doUpload(e.dataTransfer.files);});
+
+        async function doUpload(fl) {
+            const ok=['image/jpeg','image/png','image/webp','image/gif','video/mp4','video/webm','video/quicktime'];
+            const files=[...fl].filter(f=>ok.includes(f.type));
+            if(!files.length){toast('No valid files selected');return;}
+
+            const prog=document.getElementById('uprog'),fill=document.getElementById('ufill'),txt=document.getElementById('utxt');
+            prog.style.display='block';
+            let done=0,fail=0;
+
+            for(const f of files){
+                txt.textContent=`${done+1}/${files.length} uploading — ${f.name}`;
+                try{
+                    // Get signed upload params from Netlify function
+                    const sigRes = await fetch(`${API}?action=sign`, {method:'POST'});
+                    const sig = await sigRes.json();
+
+                    // Upload directly to Cloudinary with signed params
+                    const fd = new FormData();
+                    fd.append('file', f);
+                    fd.append('api_key', sig.api_key);
+                    fd.append('timestamp', sig.timestamp);
+                    fd.append('signature', sig.signature);
+                    fd.append('folder', sig.folder);
+
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloud_name}/auto/upload`, {method:'POST', body:fd});
+                    const data = await res.json();
+                    if(data.error) throw new Error(data.error.message);
+                    done++;
+                } catch(e){fail++;console.error(f.name,e);}
+                fill.style.width=`${Math.round((done+fail)/files.length*100)}%`;
+            }
+
+            cachedMedia=null;
+            await renderPublic(); await renderAdmin();
+            setTimeout(()=>{prog.style.display='none';fill.style.width='0';},800);
+            toast(fail===0?`${done} file${done>1?'s':''} uploaded successfully ✓`:`${done} success, ${fail} failed`);
+            document.getElementById('afiles').value='';
+        }
+
+        async function renderAdmin() {
+            const g=document.getElementById('agrid'); g.innerHTML='<div class="ano-prod">Loading…</div>';
+            try {
+                const res = await fetch(`${API}?action=list`);
+                const data = await res.json();
+                let all = data.resources || [];
+                const ord=gOrd();
+                if(ord.length){const map=Object.fromEntries(all.map(x=>[x.public_id,x]));const ordered=ord.map(id=>map[id]).filter(Boolean);const rest=all.filter(x=>!ord.includes(x.public_id));all=[...ordered,...rest];}
+                const hid=gHid();
+                document.getElementById('pcnt').textContent=all.filter(x=>!hid.includes(x.public_id)).length;
+                g.innerHTML='';
+                if(!all.length){g.innerHTML='<div class="ano-prod">No products yet — upload above ☝️</div>';return;}
+                all.forEach((p,i)=>{
+                    const isHid=hid.includes(p.public_id), v=p.type==='video';
+                    const card=document.createElement('div'); card.className='acard'; card.style.opacity=isHid?'.4':'1';
+                    card.innerHTML=`<div class="athumb">${v?`<video src="${p.url}" muted loop playsinline preload="metadata" style="width:100%;height:100%;object-fit:cover"></video>`:`<img src="${p.url}" style="width:100%;height:100%;object-fit:cover"/>`}<div class="aarrows"><button class="abtn" onclick="mvP('${p.public_id}',${i},-1)">↑</button><button class="abtn" onclick="mvP('${p.public_id}',${i},1)">↓</button></div><button class="adel" title="${isHid?'Restore to site':'Delete'}" onclick="${isHid?`restoreP('${p.public_id}')`:`delP('${p.public_id}','${p.type}')`}">${isHid?'👁':'✕'}</button><div class="aseq">${isHid?'H':String(i+1).padStart(2,'0')}</div></div><div class="ainfo">${v?'🎬 Video':'📸 Photo'}${isHid?' · Hidden':` · #${i+1}`}</div>`;
+                    if(v){const ve=card.querySelector('video');ve.play().catch(()=>{});}
+                    g.appendChild(card);
+                });
+            } catch(e){g.innerHTML='<div class="ano-prod">Error loading collection</div>';}
+        }
+
+        async function delP(pid, rtype) {
+            if(!confirm(`Permanently delete this product?`)) return;
+            try {
+                await fetch(`${API}?action=delete`, {
+                    method:'POST',
+                    headers:{'Content-Type':'application/json'},
+                    body: JSON.stringify({public_id: pid, resource_type: rtype})
+                });
+                cachedMedia=null; renderPublic(); renderAdmin();
+                toast('Deleted permanently ✓');
+            } catch(e){toast('Delete failed ⚠️');}
+        }
+
+        function restoreP(pid){
+            const hid=gHid().filter(x=>x!==pid); sHid(hid);
+            cachedMedia=null; renderPublic(); renderAdmin();
+            toast('Restored to site ✓');
+        }
+
+        async function mvP(pid,i,d){
+            const res=await fetch(`${API}?action=list`);
+            const data=await res.json();
+            let all=data.resources||[];
+            const ord=gOrd();
+            if(ord.length){const map=Object.fromEntries(all.map(x=>[x.public_id,x]));const ordered=ord.map(id=>map[id]).filter(Boolean);const rest=all.filter(x=>!ord.includes(x.public_id));all=[...ordered,...rest];}
+            const ids=all.map(x=>x.public_id);
+            const j=i+d; if(j<0||j>=ids.length) return;
+            [ids[i],ids[j]]=[ids[j],ids[i]]; sOrd(ids);
+            cachedMedia=null; renderPublic(); renderAdmin();
+        }
+
+        // Lightbox
+        function openLb(src,wl,v){
+            const m=document.getElementById('lb-media');
+            m.innerHTML=v?`<video src="${src}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block"></video>`:`<img src="${src}" style="width:100%;height:100%;object-fit:cover;display:block"/>`;
+            document.getElementById('lb-wa').href=wl;
+            document.getElementById('lb').classList.add('open');
+            document.body.style.overflow='hidden';
+        }
+        function closeLb(){document.getElementById('lb').classList.remove('open');document.body.style.overflow='';document.getElementById('lb-media').innerHTML='';}
+        document.getElementById('lb').addEventListener('click',e=>{if(e.target===document.getElementById('lb'))closeLb();});
+        document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeLb();closeLogin();}});
+
+        renderPublic();
+    </script> -->
+
+
+    <script>
+        // ═══ CONFIG ═══
+        const PASS = "admin123";
+        const SNUM = "919425982653";
+        const RNUM = "918120126881";
+        const OK = "tss_order";
+        const API = "/.netlify/functions/media";
+
+        const waNum = i => (i % 2 === 0) ? SNUM : RNUM;
+        const waLink = (num, phone, title) => `https://wa.me/${phone}?text=${encodeURIComponent(`Hi! I'm interested in "${title}" (Piece #${num}) from The Suit Story 🌸`)}`;
+
+        // Cursor
+        const c1 = document.getElementById('cur'), c2 = document.getElementById('cur2');
+        document.addEventListener('mousemove', e => { c1.style.left = e.clientX + 'px'; c1.style.top = e.clientY + 'px'; c2.style.left = e.clientX + 'px'; c2.style.top = e.clientY + 'px'; });
+
+        // Splash
+        window.addEventListener('load', () => { setTimeout(() => { const s = document.getElementById('splash'); s.style.opacity = '0'; s.style.pointerEvents = 'none'; setTimeout(() => s.style.display = 'none', 800); }, 2800); });
+
+        // Marquee
+        const mt = document.getElementById('mtrack');
+        ['Handcrafted Ethnic Wear', 'Studio to Wardrobe', 'Modern Grace', 'Indian Heritage', 'Tailored Elegance', 'The Suit Story',
+            'Handcrafted Ethnic Wear', 'Studio to Wardrobe', 'Modern Grace', 'Indian Heritage', 'Tailored Elegance', 'The Suit Story']
+            .forEach(t => { const e = document.createElement('span'); e.className = 'marquee-item'; e.innerHTML = `${t} <span class="marquee-dot">✦</span>`; mt.appendChild(e); });
+
+        // Reveal
+        const rio = new IntersectionObserver(e => e.forEach(x => { if (x.isIntersecting) x.target.classList.add('visible'); }), { threshold: .08 });
+        document.querySelectorAll('.reveal').forEach(el => rio.observe(el));
+
+        // Toast
+        function toast(m, d = 2800) { const t = document.getElementById('toast'); t.textContent = m; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), d); }
+
+        // Order storage
+        const gOrd = () => { try { return JSON.parse(localStorage.getItem(OK)) || []; } catch { return []; } };
+        const sOrd = a => localStorage.setItem(OK, JSON.stringify(a));
+
+        // ═══ DATA MODEL ═══
+        // Product = { id: "prod_TIMESTAMP", title, price, desc, size, images: [{public_id, url}] }
+        // Cloudinary folder: tss/prod_TIMESTAMP/
+        // Context on first image: title|price|desc|size stored as caption+alt
+
+        let cachedProducts = null;
+
+        // Parse context string from cloudinary context
+        function parseCtx(res) {
+            // We store metadata in the image's context as JSON via caption field
+            try {
+                const ctx = res.context?.custom;
+                if (ctx?.product_meta) return JSON.parse(ctx.product_meta);
+            } catch (e) { }
+            return null;
+        }
+
+        // Group flat Cloudinary resources into products by folder
+        function groupIntoProducts(resources) {
+            const map = {};
+            resources.forEach(r => {
+                // public_id format: tss/prod_TIMESTAMP/img_N
+                const parts = r.public_id.split('/');
+                if (parts.length < 2) return;
+                const folder = parts.slice(0, -1).join('/'); // e.g. tss/prod_1234
+                if (!map[folder]) map[folder] = { folder, images: [], meta: null };
+                map[folder].images.push(r);
+                // First image carries metadata
+                const meta = parseCtx(r);
+                if (meta) map[folder].meta = meta;
+            });
+
+            // Sort images within each product by public_id (upload order)
+            Object.values(map).forEach(p => {
+                p.images.sort((a, b) => a.public_id.localeCompare(b.public_id));
+            });
+
+            return Object.values(map).sort((a, b) => a.folder.localeCompare(b.folder));
+        }
+
+        async function fetchProducts(force = false) {
+            if (cachedProducts && !force) return cachedProducts;
+            try {
+                const res = await fetch(`${API}?action=list`);
+                const data = await res.json();
+                const all = data.resources || [];
+                const products = groupIntoProducts(all);
+
+                // Apply custom order
+                const ord = gOrd();
+                if (ord.length) {
+                    const pm = Object.fromEntries(products.map(p => [p.folder, p]));
+                    const ordered = ord.map(f => pm[f]).filter(Boolean);
+                    const rest = products.filter(p => !ord.includes(p.folder));
+                    cachedProducts = [...ordered, ...rest];
+                } else {
+                    cachedProducts = products;
+                }
+                return cachedProducts;
+            } catch (e) {
+                console.error('Fetch failed:', e);
+                return [];
+            }
+        }
+
+        // ═══ PUBLIC RENDER ═══
+        let view = 'grid';
+        function setView(v) { view = v; document.getElementById('btn-grid').classList.toggle('active', v === 'grid'); document.getElementById('btn-list').classList.toggle('active', v === 'list'); renderPublic(); }
+
+        async function renderPublic() {
+            const w = document.getElementById('prod-wrap');
+            w.innerHTML = '<div class="p-loading"><div class="p-spinner"></div><p>Loading Collection…</p></div>';
+            const products = await fetchProducts();
+            w.innerHTML = '';
+            document.getElementById('stat-count').textContent = products.length;
+
+            if (!products.length) {
+                w.innerHTML = '<div class="p-empty"><div class="p-empty-icon">✦</div><h3>Collection Coming Soon</h3><p>New designs on the way. Contact us on WhatsApp.</p></div>';
+                return;
+            }
+
+            if (view === 'grid') {
+                const g = document.createElement('div'); g.className = 'pgrid';
+                products.forEach((p, i) => {
+                    const num = i + 1;
+                    const phone = waNum(i);
+                    const meta = p.meta || {};
+                    const title = meta.title || `Piece ${num}`;
+                    const price = meta.price ? `₹${Number(meta.price).toLocaleString('en-IN')}` : '';
+                    const coverUrl = p.images[0]?.url || '';
+                    const wl = waLink(num, phone, title);
+
+                    const card = document.createElement('div');
+                    card.className = 'pcard';
+                    card.style.transitionDelay = `${i * .04}s`;
+
+                    const imgDots = p.images.length > 1
+                        ? `<div class="pcard-dots">${p.images.map((_, di) => `<span class="pcard-dot${di===0?' active':''}"></span>`).join('')}</div>`
+                        : '';
+                    const allImgs = p.images.map((img, ii) =>
+                        `<img src="${img.url}" alt="${title} ${ii+1}" loading="${ii===0?'eager':'lazy'}" class="pcard-slide${ii===0?' active':''}" />`
+                    ).join('');
+
+                    card.innerHTML = `
+                        <div class="pcard-img" onclick="openLb(${i})">
+                            ${allImgs}
+                            <div class="pcard-num">${String(num).padStart(2, '0')}</div>
+                            ${imgDots}
+                        </div>
+                        <div class="pcard-foot">
+                            <div class="pcard-type">${title}</div>
+                            ${price ? `<div style="font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--dark);margin:.2rem 0 .4rem">${price}</div>` : ''}
+                            <a class="buy-btn" href="${wl}" target="_blank">Buy Now</a>
+                        </div>`;
+
+                    // Multi-image hover on card
+                    if (p.images.length > 1) {
+                        const slides = card.querySelectorAll('.pcard-slide');
+                        const dots = card.querySelectorAll('.pcard-dot');
+                        let curSlide = 0;
+                        const showSlide = (idx) => {
+                            slides.forEach((s, si) => s.classList.toggle('active', si === idx));
+                            dots.forEach((d, di) => d.classList.toggle('active', di === idx));
+                            curSlide = idx;
+                        };
+                        card.querySelector('.pcard-img').addEventListener('mousemove', (e) => {
+                            const rect = e.currentTarget.getBoundingClientRect();
+                            const idx = Math.min(Math.floor((e.clientX - rect.left) / rect.width * p.images.length), p.images.length - 1);
+                            if (idx !== curSlide) showSlide(idx);
+                        });
+                        card.querySelector('.pcard-img').addEventListener('mouseleave', () => showSlide(0));
+                    }
+
+                    g.appendChild(card);
+                });
+                w.appendChild(g);
+            } else {
+                const l = document.createElement('div'); l.className = 'plist';
+                products.forEach((p, i) => {
+                    const num = i + 1;
+                    const phone = waNum(i);
+                    const meta = p.meta || {};
+                    const title = meta.title || `Piece ${num}`;
+                    const price = meta.price ? `₹${Number(meta.price).toLocaleString('en-IN')}` : '';
+                    const coverUrl = p.images[0]?.url || '';
+                    const wl = waLink(num, phone, title);
+
+                    const item = document.createElement('div');
+                    item.className = 'plist-item';
+                    item.style.transitionDelay = `${i * .03}s`;
+                    item.innerHTML = `
+                            <div class="plist-thumb" onclick="openLb(${i})">
+                                <img src="${coverUrl}" loading="lazy"/>
+                            </div>
+                            <div class="plist-info">
+                                <div class="plist-num">No. ${String(num).padStart(2, '0')}</div>
+                                <div class="plist-name">${title}</div>
+                                <div class="plist-meta">${price || 'Enquire for price'} · ${p.images.length} photo${p.images.length > 1 ? 's' : ''}</div>
+                            </div>
+                            <div class="plist-action"><a class="plist-btn" href="${wl}" target="_blank">Buy</a></div>`;
+                    l.appendChild(item);
+                });
+                w.appendChild(l);
+            }
+
+            setTimeout(() => {
+                document.querySelectorAll('.pcard,.plist-item').forEach(el => {
+                    const o = new IntersectionObserver(e => { e.forEach(x => { if (x.isIntersecting) { x.target.classList.add('visible'); o.unobserve(x.target); } }); }, { threshold: .05 });
+                    o.observe(el);
+                });
+            }, 50);
+        }
+
+        // ═══ LIGHTBOX with CAROUSEL ═══
+        let lbProducts = [];
+        let lbCurProd = 0;
+        let lbCurImg = 0;
+
+        async function openLb(prodIdx) {
+            lbProducts = await fetchProducts();
+            lbCurProd = prodIdx;
+            lbCurImg = 0;
+            renderLb();
+            document.getElementById('lb').classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderLb() {
+            const p = lbProducts[lbCurProd];
+            if (!p) return;
+            const meta = p.meta || {};
+            const num = lbCurProd + 1;
+            const phone = waNum(lbCurProd);
+            const title = meta.title || `Piece ${num}`;
+            const price = meta.price ? `₹${Number(meta.price).toLocaleString('en-IN')}` : '';
+            const imgs = p.images;
+            const img = imgs[lbCurImg];
+
+            // Main image
+            document.getElementById('lb-main-img').src = img?.url || '';
+            document.getElementById('lb-main-img').alt = title;
+
+            // Counter
+            document.getElementById('lb-counter').textContent = `${lbCurImg + 1} / ${imgs.length}`;
+
+            // Nav visibility
+            document.getElementById('lb-prev').style.display = imgs.length > 1 ? 'flex' : 'none';
+            document.getElementById('lb-next').style.display = imgs.length > 1 ? 'flex' : 'none';
+
+            // Dots
+            const dots = document.getElementById('lb-dots');
+            dots.innerHTML = '';
+            if (imgs.length > 1) {
+                imgs.forEach((_, i) => {
+                    const d = document.createElement('button');
+                    d.className = 'lb-dot' + (i === lbCurImg ? ' active' : '');
+                    d.onclick = () => { lbCurImg = i; renderLb(); };
+                    dots.appendChild(d);
+                });
+            }
+
+            // Details
+            document.getElementById('lb-title').textContent = title;
+            document.getElementById('lb-price').innerHTML = price ? `${price} <span>onwards</span>` : '';
+            document.getElementById('lb-desc').textContent = meta.desc || '';
+            document.getElementById('lb-desc').style.display = meta.desc ? 'block' : 'none';
+
+            const sizeWrap = document.getElementById('lb-size-wrap');
+            if (meta.size) {
+                document.getElementById('lb-size').textContent = meta.size;
+                sizeWrap.style.display = 'block';
+            } else {
+                sizeWrap.style.display = 'none';
+            }
+
+            // WhatsApp link
+            document.getElementById('lb-wa').href = waLink(num, phone, title);
+        }
+
+        function lbNav(d) {
+            const p = lbProducts[lbCurProd];
+            if (!p) return;
+            lbCurImg = (lbCurImg + d + p.images.length) % p.images.length;
+            renderLb();
+        }
+
+        // Swipe support
+        let lbTouchX = null;
+        document.getElementById('lb').addEventListener('touchstart', e => { lbTouchX = e.touches[0].clientX; });
+        document.getElementById('lb').addEventListener('touchend', e => {
+            if (lbTouchX === null) return;
+            const dx = e.changedTouches[0].clientX - lbTouchX;
+            if (Math.abs(dx) > 40) lbNav(dx < 0 ? 1 : -1);
+            lbTouchX = null;
+        });
+
+        function closeLb() {
+            document.getElementById('lb').classList.remove('open');
+            document.body.style.overflow = '';
+        }
+        document.getElementById('lb').addEventListener('click', e => { if (e.target === document.getElementById('lb')) closeLb(); });
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') { closeLb(); closeLogin(); }
+            if (document.getElementById('lb').classList.contains('open')) {
+                if (e.key === 'ArrowRight') lbNav(1);
+                if (e.key === 'ArrowLeft') lbNav(-1);
+            }
+        });
+
+        // ═══ ADMIN ═══
+        function openLogin() { document.getElementById('admin-login').classList.add('open'); setTimeout(() => document.getElementById('lpass').focus(), 100); }
+        function closeLogin() { document.getElementById('admin-login').classList.remove('open'); document.getElementById('lpass').value = ''; document.getElementById('lerr').style.display = 'none'; }
+        function doLogin() { if (document.getElementById('lpass').value === PASS) { closeLogin(); openPanel(); } else { document.getElementById('lerr').style.display = 'block'; document.getElementById('lpass').value = ''; document.getElementById('lpass').focus(); } }
+
+        function openPanel() {
+            document.getElementById('admin-panel').classList.add('open');
+            document.body.style.overflow = 'hidden';
+            renderAdmin();
+        }
+        function doLogout() { document.getElementById('admin-panel').classList.remove('open'); document.body.style.overflow = ''; toast('Logged out ✓'); }
+
+        // Drag & drop on upload zone
+        const uz = document.getElementById('upzone');
+        uz.addEventListener('dragover', e => { e.preventDefault(); uz.classList.add('drag'); });
+        uz.addEventListener('dragleave', () => uz.classList.remove('drag'));
+        uz.addEventListener('drop', e => { e.preventDefault(); uz.classList.remove('drag'); selectFiles(e.dataTransfer.files); });
+
+        // Selected files preview
+        let selectedFiles = [];
+        function selectFiles(fl) {
+            const ok = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+            const files = [...fl].filter(f => ok.includes(f.type)).slice(0, 5);
+            selectedFiles = files;
+            const hint = document.getElementById('pf-file-hint');
+            const prev = document.getElementById('pf-preview');
+            prev.innerHTML = '';
+            if (!files.length) { hint.textContent = 'Koi file select nahi hui'; return; }
+            hint.textContent = `${files.length} file${files.length > 1 ? 's' : ''} select hui — pehli image cover hogi`;
+            files.forEach((f, i) => {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    const img = document.createElement('img');
+                    img.src = ev.target.result;
+                    img.style.cssText = 'width:60px;height:75px;object-fit:cover;border-radius:4px;border:' + (i === 0 ? '2px solid #b8975a' : '1px solid rgba(255,255,255,.15)');
+                    prev.appendChild(img);
+                };
+                reader.readAsDataURL(f);
+            });
+        }
+
+        // Upload a single file to Cloudinary under a given folder
+        async function uploadOneFile(file, folder, isFirst, meta) {
+            const sigRes = await fetch(`${API}?action=sign`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ folder, context: isFirst ? JSON.stringify(meta) : null })
+            });
+            const sig = await sigRes.json();
+
+            const fd = new FormData();
+            fd.append('file', file);
+            fd.append('api_key', sig.api_key);
+            fd.append('timestamp', sig.timestamp);
+            fd.append('signature', sig.signature);
+            fd.append('folder', folder);
+            if (isFirst && sig.context) {
+                fd.append('context', sig.context);
+            }
+
+            const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`, { method: 'POST', body: fd });
+            const data = await res.json();
+            if (data.error) throw new Error(data.error.message);
+            return data;
+        }
+
+        async function createProduct() {
+            const title = document.getElementById('pf-title').value.trim();
+            const price = document.getElementById('pf-price').value.trim();
+            if (!title) { toast('Product title likhna zaroori hai ⚠️'); return; }
+            if (!selectedFiles.length) { toast('Kam se kam 1 photo select karo ⚠️'); return; }
+
+            const meta = {
+                title,
+                price: price || '',
+                desc: document.getElementById('pf-desc').value.trim(),
+                size: document.getElementById('pf-size').value.trim()
+            };
+
+            const folder = `tss/prod_${Date.now()}`;
+            const prog = document.getElementById('uprog'), fill = document.getElementById('ufill'), txt = document.getElementById('utxt');
+            prog.style.display = 'block';
+            let done = 0, fail = 0;
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                txt.textContent = `${i + 1}/${selectedFiles.length} uploading…`;
+                try {
+                    await uploadOneFile(selectedFiles[i], folder, i === 0, meta);
+                    done++;
+                } catch (e) {
+                    fail++;
+                    console.error(e);
+                }
+                fill.style.width = `${Math.round((done + fail) / selectedFiles.length * 100)}%`;
+            }
+
+            setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0'; }, 700);
+
+            if (done > 0) {
+                cachedProducts = null;
+                await renderPublic();
+                await renderAdmin();
+                // Reset form
+                document.getElementById('pf-title').value = '';
+                document.getElementById('pf-price').value = '';
+                document.getElementById('pf-desc').value = '';
+                document.getElementById('pf-size').value = '';
+                document.getElementById('pf-preview').innerHTML = '';
+                document.getElementById('pf-file-hint').textContent = 'Koi file select nahi hui';
+                document.getElementById('afiles').value = '';
+                selectedFiles = [];
+                toast(fail === 0 ? `Product "${title}" create ho gaya ✓` : `${done} upload success, ${fail} failed`);
+            } else {
+                toast('Upload fail ho gaya ⚠️');
+            }
+        }
+
+        // Add more images to existing product
+        async function addImgToProduct(folder, files) {
+            if (!files.length) return;
+            const prog = document.getElementById('uprog'), fill = document.getElementById('ufill'), txt = document.getElementById('utxt');
+            prog.style.display = 'block';
+            let done = 0;
+            for (let i = 0; i < files.length; i++) {
+                txt.textContent = `Uploading ${i + 1}/${files.length}…`;
+                try {
+                    const sigRes = await fetch(`${API}?action=sign`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ folder }) });
+                    const sig = await sigRes.json();
+                    const fd = new FormData();
+                    fd.append('file', files[i]);
+                    fd.append('api_key', sig.api_key);
+                    fd.append('timestamp', sig.timestamp);
+                    fd.append('signature', sig.signature);
+                    fd.append('folder', folder);
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${sig.cloud_name}/image/upload`, { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.error) throw new Error(data.error.message);
+                    done++;
+                } catch (e) { console.error(e); }
+                fill.style.width = `${Math.round((done) / files.length * 100)}%`;
+            }
+            setTimeout(() => { prog.style.display = 'none'; fill.style.width = '0'; }, 700);
+            cachedProducts = null; renderPublic(); renderAdmin();
+            toast(`${done} photo${done > 1 ? 's' : ''} add ho gaya ✓`);
+        }
+
+        async function renderAdmin() {
+            const g = document.getElementById('agrid');
+            g.innerHTML = '<div class="ano-prod">Loading…</div>';
+            try {
+                const res = await fetch(`${API}?action=list`);
+                const data = await res.json();
+                const all = data.resources || [];
+                const products = groupIntoProducts(all);
+
+                const ord = gOrd();
+                let sorted = products;
+                if (ord.length) { const pm = Object.fromEntries(products.map(p => [p.folder, p])); const ordered = ord.map(f => pm[f]).filter(Boolean); const rest = products.filter(p => !ord.includes(p.folder)); sorted = [...ordered, ...rest]; }
+
+                document.getElementById('pcnt').textContent = sorted.length;
+                g.innerHTML = '';
+                if (!sorted.length) { g.innerHTML = '<div class="ano-prod">Koi product nahi hai — upar se add karo ☝️</div>'; return; }
+
+                sorted.forEach((p, i) => {
+                    const meta = p.meta || {};
+                    const title = meta.title || `Piece ${i + 1}`;
+                    const price = meta.price ? `₹${Number(meta.price).toLocaleString('en-IN')}` : '—';
+                    const coverUrl = p.images[0]?.url || '';
+
+                    const card = document.createElement('div');
+                    card.className = 'ap-pcard';
+                    card.innerHTML = `
+                            <div class="ap-pcard-head">
+                                <div class="ap-pthumb"><img src="${coverUrl}" alt="${title}"/></div>
+                                <div class="ap-pinfo">
+                                    <div class="ap-pname">${title}</div>
+                                    <div class="ap-pprice">${price} · ${p.images.length} photo${p.images.length > 1 ? 's' : ''}</div>
+                                </div>
+                                <div class="ap-pactions">
+                                    <button class="ap-pa" onclick="mvProd('${p.folder}',${i},-1)">↑</button>
+                                    <button class="ap-pa" onclick="mvProd('${p.folder}',${i},1)">↓</button>
+                                    <button class="ap-pa del" onclick="delProduct('${p.folder}',${JSON.stringify(p.images.map(x => x.public_id + '|' + x.type))})">🗑</button>
+                                </div>
+                            </div>
+                            <div class="ap-imgs" id="imgs-${i}">
+                                ${p.images.map((img, ii) => `
+                                    <div class="ap-img-item">
+                                        <img src="${img.url}" alt="img ${ii + 1}"/>
+                                        <button class="ap-img-del" onclick="delOneImg('${img.public_id}','${img.type || 'image'}')">✕</button>
+                                        <div class="ap-img-badge">${ii === 0 ? 'Cover' : String(ii + 1)}</div>
+                                    </div>`).join('')}
+                                ${p.images.length < 5 ? `<label class="ap-add-img" title="Photo add karo"><input type="file" accept="image/*" multiple onchange="addImgToProduct('${p.folder}', [...this.files].slice(0,${5 - p.images.length}))"/>＋</label>` : ''}
+                            </div>`;
+                    g.appendChild(card);
+                });
+            } catch (e) { g.innerHTML = '<div class="ano-prod">Error loading — try again</div>'; }
+        }
+
+        async function delOneImg(pid, rtype) {
+            if (!confirm('Is photo ko permanently delete karein?')) return;
+            try {
+                await fetch(`${API}?action=delete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ public_id: pid, resource_type: rtype || 'image' }) });
+                cachedProducts = null; renderPublic(); renderAdmin();
+                toast('Photo deleted ✓');
+            } catch (e) { toast('Delete fail ⚠️'); }
+        }
+
+        async function delProduct(folder, imgList) {
+            if (!confirm('Is poore product ko aur uski saari photos ko permanently delete karein?')) return;
+            const imgs = typeof imgList === 'string' ? JSON.parse(imgList) : imgList;
+            for (const entry of imgs) {
+                const [pid, rtype] = typeof entry === 'string' ? entry.split('|') : [entry.public_id, entry.type];
+                try { await fetch(`${API}?action=delete`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ public_id: pid, resource_type: rtype || 'image' }) }); } catch (e) { }
+            }
+            // Remove from order
+            const ord = gOrd().filter(f => f !== folder); sOrd(ord);
+            cachedProducts = null; renderPublic(); renderAdmin();
+            toast('Product delete ho gaya ✓');
+        }
+
+        async function mvProd(folder, i, d) {
+            const res = await fetch(`${API}?action=list`);
+            const data = await res.json();
+            const products = groupIntoProducts(data.resources || []);
+            const ord = gOrd();
+            let sorted = products;
+            if (ord.length) { const pm = Object.fromEntries(products.map(p => [p.folder, p])); const ordered = ord.map(f => pm[f]).filter(Boolean); const rest = products.filter(p => !ord.includes(p.folder)); sorted = [...ordered, ...rest]; }
+            const ids = sorted.map(p => p.folder);
+            const j = i + d; if (j < 0 || j >= ids.length) return;
+            [ids[i], ids[j]] = [ids[j], ids[i]]; sOrd(ids);
+            cachedProducts = null; renderPublic(); renderAdmin();
+        }
+
+        renderPublic();
+    </script>
+
+
+
+
+
+
+</body>
+</html>
